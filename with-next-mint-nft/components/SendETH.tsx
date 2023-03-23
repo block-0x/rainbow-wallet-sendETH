@@ -15,12 +15,13 @@ import { parseEther } from 'ethers/lib/utils.js';
 
 export function SendETH() {
   const [amount, setAmount] = useState<Number>(0.0001)
+  const depositAddress = process.env.NEXT_PUBLIC_DEPOSIT_ADDRESS || "";
 
   const {
     data: txData,
     isLoading: transactionLoading,sendTransaction } = useSendTransaction({
       request: {
-        to: "0xa8633D55cD7F116f20e80b6b6c2Ba597f7985f6D",
+        to: depositAddress,
         value: parseEther(amount.toString())
       }
     })
