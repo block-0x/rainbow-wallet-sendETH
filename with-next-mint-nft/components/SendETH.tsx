@@ -40,6 +40,7 @@ export function SendETH() {
 
   return (
     <VStack justifyContent="center" alignItems="center" h="80vh">
+      <h4>{"Token sale"}</h4>
       <FormControl isInvalid={isError} mt={6}>
           <Input
             className="input"
@@ -59,7 +60,7 @@ export function SendETH() {
         </FormControl>
 
       <Button className="button" mt={4} colorScheme='teal' onClick={() => sendTransaction()}>
-        {'Send'}
+        {'DEPOSIT ETH'}
       </Button>
     </VStack>
   );
