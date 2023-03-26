@@ -1,67 +1,74 @@
-import React, {useState} from 'react';
+import React, { useState} from 'react';
 import { useSendTransaction, useWaitForTransaction } from 'wagmi'
 import {
-  FormLabel,
   FormControl,
   Input,
   Button,
-  VStack,
-  Box,
   FormHelperText,
-  FormErrorMessage
+  FormErrorMessage,
 } from '@chakra-ui/react'
-
 import { parseEther } from 'ethers/lib/utils.js';
 
 export function SendETH() {
-  const [amount, setAmount] = useState<Number>(0.0001)
+  const [ethAmount, setEthAmount] = useState<Number>(0)
   const depositAddress = process.env.NEXT_PUBLIC_DEPOSIT_ADDRESS || "";
 
-  const {
-    data: txData,
-    isLoading: transactionLoading,sendTransaction } = useSendTransaction({
-      request: {
-        to: depositAddress,
-        value: parseEther(amount.toString())
-      }
-    })
-
-  const { isLoading: waitLoading } = useWaitForTransaction({
-
-    hash: txData?.hash,
-    onSuccess: () => {
-      console.log("successfully")
-      console.log(waitLoading)
-      console.log(transactionLoading)
+    const onError = (error: any) => {
+      console.error(error?.data?.message)
     }
+
+    const {
+      data: txData,
+      isLoading: transactionLoading,
+      sendTransaction
+  } = useSendTransaction({
+      request: {},
+      mode: 'recklesslyUnprepared',
+      onError
   });
+
+    const { isLoading: waitLoading } = useWaitForTransaction({
+
+      hash: txData?.hash,
+      onSuccess: () => {
+        console.log("successfully")
+        console.log(waitLoading)
+        console.log(transactionLoading)
+      },
+      onError
+    });
+
   const [input, setInput] = useState('')
   const isError = input === ''
 
   return (
-    <VStack justifyContent="center" alignItems="center" h="80vh">
-      <h4>{"Token sale"}</h4>
+    <>
+      <h4>{"Buy at ETH"}</h4>
       <FormControl isInvalid={isError} mt={6}>
-          <Input
-            className="input"
-            placeholder='100ETH'
-            maxLength={20}
-            onChange={(e) =>
-              {if (typeof e.target.value === 'number') {
-                setAmount(parseInt(e.target.value))}
-              }}
-          />
-      {!isError ? (
-        <FormHelperText>
-        </FormHelperText>
-      ) : (
-        <FormErrorMessage></FormErrorMessage>
-      )}
-        </FormControl>
-
-      <Button className="button" mt={4} colorScheme='teal' onClick={() => sendTransaction()}>
+        <Input
+          className="input"
+          placeholder='MIN 30 ETH'
+          maxLength={20}
+          onChange={(e) =>
+            {if (typeof e.target.value === 'number') {
+              setEthAmount(parseInt(e.target.value))}
+            }}
+        />
+        {!isError ? (
+          <FormHelperText>
+          </FormHelperText>
+        ) : (
+          <FormErrorMessage></FormErrorMessage>
+        )}
+        <Button className="button" mt={4} colorScheme='teal' onClick={() => sendTransaction?.({
+            recklesslySetUnpreparedRequest: {
+              to: depositAddress,
+              value: parseEther(ethAmount.toString())
+            }
+        })}>
         {'DEPOSIT ETH'}
-      </Button>
-    </VStack>
+        </Button>
+      </FormControl>
+    </>
   );
 }
